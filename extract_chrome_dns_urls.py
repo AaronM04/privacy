@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-VERSION_STRING='2013-01-26 14:15'
+VERSION_STRING='2013-01-26 14:30'
 #
 # extract_chrome_dns_urls.py - when given a saved HTML document from
 #   'chrome://dns', extract all the URLs (http and https protocols) that are
@@ -14,8 +14,6 @@ import sys
 import re
 from getopt import getopt, GetoptError
 from HTMLParser import HTMLParser
-
-all_data = []
 
 def handle_data_factory():
     """Produces a function that can be called to save the data to a list.
