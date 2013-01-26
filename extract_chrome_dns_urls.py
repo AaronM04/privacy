@@ -54,9 +54,11 @@ if __name__ == '__main__':
     parser.handle_data = handle_data
     parser.feed(s)
 
+    # extract everything that looks like a URL
     all_urls = filter(lambda x: re.match(r'^https?://', x), all_data)
-    all_urls = list(set(all_urls))
 
-    # TODO: sort all_urls in DNS order
+    # remove duplicates and sort in DNS order
+    all_urls = list(set(all_urls))
+    all_urls = sorted(all_urls, cmp=cmp_dns_order)
 
     print '\n'.join(all_urls)
