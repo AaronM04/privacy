@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-VERSION_STRING='2013-01-26 14:30'
+VERSION_STRING='2013-01-26 15:15'
 #
 # extract_chrome_dns_urls.py - when given a saved HTML document from
 #   'chrome://dns', extract all the URLs (http and https protocols) that are
@@ -25,13 +25,20 @@ def handle_data_factory():
 
 
 
+def url_to_dom(url):
+    """Convert a URL to a raw domain (e.g., 'http://www.google.com/' becomes
+    'www.google.com')"""
+    return url.rstrip('/').split('//')[-1]
+
+
+
 def cmp_dns_order(url_x, url_y):
     """Compare the two URLs in 'DNS order', meaning the the top level domains
     are sorted ASCII-betically, then the next-highest, then the next, etc.
     Returns one of {-1, 0, 1} like cmp()."""
 
-    dom_x = url_x.rstrip('/').split('//')[-1]
-    dom_y = url_y.rstrip('/').split('//')[-1]
+    dom_x = url_to_dom(url_x)
+    dom_y = url_to_dom(url_y)
 
     revdom_x = '.'.join(reversed(dom_x.split('.')))
     revdom_y = '.'.join(reversed(dom_y.split('.')))
@@ -41,11 +48,28 @@ def cmp_dns_order(url_x, url_y):
 
 
 if __name__ == '__main__':
+    output_hosts_fmt = False
+
     f = sys.stdin
 
-    # TODO: get options
+    opts, args = getopt(sys.argv[1:], '', ['hosts'])
+    for longopt, opt in opts:
+        if longopt == '--hosts':
+            output_hosts_fmt = True
 
-    s = sys.stdin.read()
+    if len(args) > 1:
+        print >>sys.stderr, "ERROR: too many arguments"
+        sys.quit(1)
+
+    if len(args) == 1:
+        in_file = args[0]
+        try:
+            f = file(in_file, 'r')    # replaces sys.stdin (see above)
+        except IOError, e:
+            print >>sys.stderr, "ERROR: could not open file %r: %r" % (in_file, e)
+            sys.quit(1)
+
+    s = f.read()
 
     # handle_data is a function which appends its argument to the all_data list
     handle_data, all_data = handle_data_factory()
@@ -61,4 +85,11 @@ if __name__ == '__main__':
     all_urls = list(set(all_urls))
     all_urls = sorted(all_urls, cmp=cmp_dns_order)
 
-    print '\n'.join(all_urls)
+    if output_hosts_fmt:        # --hosts
+        entries = []
+        for url in all_urls:
+            dom = url_to_dom(url)
+            entries.append('127.0.0.1   ' + dom)
+        print '\n'.join(entries)
+    else:
+        print '\n'.join(all_urls)
