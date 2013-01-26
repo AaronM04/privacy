@@ -23,6 +23,23 @@ def handle_data_factory():
         all_data.append(data)
     return (handle_data, all_data)
 
+
+
+def cmp_dns_order(url_x, url_y):
+    """Compare the two URLs in 'DNS order', meaning the the top level domains
+    are sorted ASCII-betically, then the next-highest, then the next, etc.
+    Returns one of {-1, 0, 1} like cmp()."""
+
+    dom_x = url_x.rstrip('/').split('//')[-1]
+    dom_y = url_y.rstrip('/').split('//')[-1]
+
+    revdom_x = '.'.join(reversed(dom_x.split('.')))
+    revdom_y = '.'.join(reversed(dom_y.split('.')))
+
+    return cmp(revdom_x, revdom_y)
+
+
+
 if __name__ == '__main__':
     f = sys.stdin
 
