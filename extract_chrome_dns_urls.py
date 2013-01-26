@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-VERSION_STRING='2013-01-21 13:45'
+VERSION_STRING='2013-01-26 14:15'
 #
 # extract_chrome_dns_urls.py - when given a saved HTML document from
 #   'chrome://dns', extract all the URLs (http and https protocols) that are
